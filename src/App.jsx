@@ -9,11 +9,16 @@ const PHASE = {
 
 const App = () => {
     const colors = [
-      '#e57373', '#64b5f6', '#81c784', '#ffd54f', '#ba68c8', '#ff8a65', '#4dd0e1', '#f06292'
+      '#e57373',
+      '#ba68c8',
+      '#4dd0e1',
+      '#ffd54f',
+      '#81c784',
     ]
 
   const BOUNCE_DURATION = 4500
-  const RADIUS = 65
+  const RADIUS = 64
+  const BORDER_WIDTH = 10
   const WIN_RADIUS = 800
 
   const touchCount = useRef(0);
@@ -24,11 +29,37 @@ const App = () => {
   const currentTouchCount = Object.keys(touches).length;
   const touchIds = Object.keys(touches)
 
+    const getXY = (t) => {
+        const { width, height, offsetLeft, offsetTop } = window.visualViewport;
+        const minX = RADIUS  + offsetLeft;
+        const maxX = width + offsetLeft - RADIUS - BORDER_WIDTH * 2;
+        const minY = RADIUS + offsetTop;
+        const maxY = height + offsetTop - RADIUS - BORDER_WIDTH * 2;
+
+        return {
+            x: Math.max(minX, Math.min(t.clientX, maxX)),
+            y: Math.max(minY, Math.min(t.clientY, maxY)),
+        };
+    };
+
+
+    const syncTouches = (e) => {
+    const newTouches = {  }
+    for (let t of e.touches) {
+      newTouches[t.identifier] = {
+        color: colors[touchCount.current % colors.length],
+        ...touches[t.identifier],
+        ...getXY(t)
+      }
+    }
+    setTouches(newTouches)
+  }
+
   useEffect(() => {
     if (currentTouchCount < 2 && phase !== PHASE.IDLE) {
       setPhase(PHASE.IDLE)
     }
-    if (currentTouchCount >= 2 && !winnerId && phase !== PHASE.CHOOSING) {
+    if (currentTouchCount >= 2 && !winnerId && phase === PHASE.IDLE) {
       setPhase(PHASE.CHOOSING)
     }
     if (currentTouchCount >= 2 && !winnerId && phase !== PHASE.WINNER) {
@@ -37,53 +68,34 @@ const App = () => {
       return () => clearTimeout(timeoutId)
     }
     if (currentTouchCount === 0 && winnerId) {
-      console.log(4)
       setWinnerId(null)
     }
   }, [currentTouchCount, phase, winnerId]);
 
-  console.log({touches, phase, winnerId});
 
   const handleTouchStart = (e) => {
-    // e.preventDefault()
-    for (let t of e.changedTouches) {
-      const newTouch = {
-        [t.identifier]: {
-          x: t.clientX,
-          y: t.clientY,
-          color: colors[touchCount.current % colors.length],
-        }
+      console.log(e, window.innerHeight, window.innerWidth)
+      for (let t of e.changedTouches) {
+          const newTouch = {
+              [t.identifier]: {
+                  ...getXY(t),
+                  color: colors[touchCount.current % colors.length],
+              }
+          }
+          setTouches(prevTouches => ({...prevTouches, ...newTouch}))
+          touchCount.current += 1;
       }
-      setTouches(prevTouches => ({...prevTouches, ...newTouch}))
-      touchCount.current += 1;
-    }
   }
 
   const handleTouchMove = (e) => {
     if (winnerId){
       return
     }
-    e.preventDefault()
-    const newTouches = { ...touches }
-    for (let t of e.changedTouches) {
-      if (newTouches[t.identifier]) {
-        newTouches[t.identifier] = {
-          ...newTouches[t.identifier],
-          x: t.clientX,
-          y: t.clientY,
-        }
-      }
-    }
-    setTouches(newTouches)
+    syncTouches(e)
   }
 
   const handleTouchEnd = (e) => {
-    e.preventDefault()
-    const newTouches = { ...touches }
-    for (let t of e.changedTouches) {
-      delete newTouches[t.identifier]
-    }
-    setTouches(newTouches)
+    syncTouches(e)
   }
 
   useEffect(() => {
@@ -91,7 +103,6 @@ const App = () => {
 
         const winnerIdx = Math.floor(Math.random() * touchIds.length)
         const winnerId = touchIds[winnerIdx]
-        console.log(winnerId)
         setWinnerId(winnerId)
     }
 
@@ -115,7 +126,6 @@ const App = () => {
       onTouchEnd={handleTouchEnd}
       onTouchCancel={handleTouchEnd}
     >
-      {/* Touch circles */}
       {Object.entries(touches).map(([id, t]) => {
         const radius = winnerId === id ? WIN_RADIUS : RADIUS;
 
@@ -131,9 +141,9 @@ const App = () => {
               height: radius * 2,
               borderRadius: '50%',
               background: t.color,
-              border: '12px solid #fff',
-              boxShadow: '0 2px 12px rgba(0,0,0,0.2)',
-              transition: winnerId && 'all 1.8s',
+              border: '10px solid #fff',
+              boxShadow: `0 2px ${BORDER_WIDTH}px rgba(0,0,0,0.2)`,
+              transition: winnerId && 'all 1.5s cubic-bezier(0.4, 0, 0.2, 1)',
               display:  winnerId && winnerId !== id && 'none',
             }}
           />
