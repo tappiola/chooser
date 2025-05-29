@@ -12,8 +12,8 @@ const App = () => {
       '#e57373', '#64b5f6', '#81c784', '#ffd54f', '#ba68c8', '#ff8a65', '#4dd0e1', '#f06292'
     ]
 
-  const BOUNCE_DURATION = 4750
-  const RADIUS = 60
+  const BOUNCE_DURATION = 4500
+  const RADIUS = 65
   const WIN_RADIUS = 800
 
   const touchCount = useRef(0);
@@ -60,6 +60,9 @@ const App = () => {
   }
 
   const handleTouchMove = (e) => {
+    if (winnerId){
+      return
+    }
     e.preventDefault()
     const newTouches = { ...touches }
     for (let t of e.changedTouches) {
@@ -83,21 +86,9 @@ const App = () => {
     setTouches(newTouches)
   }
 
-
-  // useEffect(() => {
-  //   if (phase === PHASE.CHOOSING) {
-  //   console.log('choosing!');
-  //     const timeoutId = setTimeout(() => setPhase(PHASE.WINNER), BOUNCE_DURATION)
-  //
-  //     return () => clearTimeout(timeoutId)
-  //   }
-  //
-  // }, [phase])
-
   useEffect(() => {
     if (phase === PHASE.WINNER && !winnerId) {
 
-      console.log('winner');
         const winnerIdx = Math.floor(Math.random() * touchIds.length)
         const winnerId = touchIds[winnerIdx]
         console.log(winnerId)
@@ -106,7 +97,6 @@ const App = () => {
 
   }, [phase, touchIds, winnerId])
 
-  // Render
   return (
     <div
       style={{
@@ -115,7 +105,7 @@ const App = () => {
         overflow: 'hidden',
         touchAction: 'none',
         background: winnerId ? touches[winnerId] : undefined,
-        userSelect: 'none', // Disable text selection for the whole app
+        userSelect: 'none',
         WebkitUserSelect: 'none',
         MozUserSelect: 'none',
         msUserSelect: 'none',
@@ -143,7 +133,7 @@ const App = () => {
               background: t.color,
               border: '12px solid #fff',
               boxShadow: '0 2px 12px rgba(0,0,0,0.2)',
-              transition: 'all 3s',
+              transition: winnerId && 'all 1.8s',
               display:  winnerId && winnerId !== id && 'none',
             }}
           />
