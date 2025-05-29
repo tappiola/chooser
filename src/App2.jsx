@@ -1,5 +1,6 @@
 import {useRef, useState, useEffect} from 'react'
-import './App.css'
+import jiggly from './jiggly.png';
+import './App2.css'
 
 const PHASE = {
   IDLE: 'idle',
@@ -16,10 +17,9 @@ const App = () => {
       '#81c784',
     ]
 
-  const BOUNCE_DURATION = 4550
-  const RADIUS = 64
+  const BOUNCE_DURATION = 6050
+  const RADIUS = 80
   const BORDER_WIDTH = 10
-  const WIN_RADIUS = 800
 
   const touchCount = useRef(0);
   const [touches, setTouches] = useState({})
@@ -36,9 +36,19 @@ const App = () => {
         const minY = RADIUS + offsetTop;
         const maxY = height + offsetTop - RADIUS - BORDER_WIDTH * 2;
 
+        const x = Math.max(minX, Math.min(t.clientX, maxX));
+        const y = Math.max(minY, Math.min(t.clientY, maxY));
+
+        const centerX = width / 2 + offsetLeft;
+        const centerY = height / 2 + offsetTop;
+
+        const angleRad = Math.atan2(centerY - y, centerX - x)
+        const angleDeg = angleRad * (180 / Math.PI) + 90;
+
         return {
-            x: Math.max(minX, Math.min(t.clientX, maxX)),
-            y: Math.max(minY, Math.min(t.clientY, maxY)),
+            x,
+            y,
+            angle: angleDeg
         };
     };
 
@@ -55,19 +65,19 @@ const App = () => {
     setTouches(newTouches)
   }
 
-    const isChoosing = currentTouchCount >=2;
+  useEffect(() => {
+    if (currentTouchCount < 2 && phase !== PHASE.IDLE) {
+      setPhase(PHASE.IDLE)
+    }
+    if (currentTouchCount >= 2 && !winnerId && phase === PHASE.IDLE) {
+      setPhase(PHASE.CHOOSING)
+    }
+    if (currentTouchCount === 0 && winnerId) {
+      setWinnerId(null)
+    }
+  }, [currentTouchCount, phase, winnerId]);
 
-    useEffect(() => {
-        if (currentTouchCount < 2 && phase !== PHASE.IDLE) {
-            setPhase(PHASE.IDLE)
-        }
-        if (currentTouchCount >= 2 && !winnerId && phase === PHASE.IDLE) {
-            setPhase(PHASE.CHOOSING)
-        }
-        if (currentTouchCount === 0 && winnerId) {
-            setWinnerId(null)
-        }
-    }, [currentTouchCount, phase, winnerId]);
+    const isChoosing = currentTouchCount >=2;
 
     useEffect(() => {
         if (isChoosing && !winnerId && phase !== PHASE.WINNER) {
@@ -111,7 +121,7 @@ const App = () => {
 
   }, [phase, touchIds, winnerId])
 
-  return (
+    return (
     <div
       style={{
         position: 'fixed',
@@ -129,31 +139,38 @@ const App = () => {
       onTouchEnd={handleTouchEnd}
       onTouchCancel={handleTouchEnd}
     >
-      {Array(5).fill(null).map((_, index) => {
-
+      {Array(5).fill(null).map((_, index)=> {
+        const radius =  RADIUS;
           const touchId = touchIds[index];
           const t = touches[touchId] || { x: 0, y: 0, angle: 0, color: 'inherit'};
-          const radius = winnerId === touchId ? WIN_RADIUS : RADIUS;
 
         return (
-          <div
-          className={phase === PHASE.CHOOSING  && 'bounce-circle'}
-            key={index}
-            style={{
-              position: 'absolute',
-              left: t.x - radius,
-              top: t.y - radius,
-              width: radius * 2,
-              height: radius * 2,
-              borderRadius: '50%',
-              background: t.color,
-              border: '10px solid #fff',
-              boxShadow: `0 2px ${BORDER_WIDTH}px rgba(0,0,0,0.2)`,
-              transition: winnerId && 'all 1.5s cubic-bezier(0.4, 0, 0.2, 1)',
-              display:  winnerId && winnerId !== touchId && 'none',
-                visibility: !touchId && 'hidden',
-            }}
-          />
+            <div
+                className={phase !== PHASE.IDLE ? 'bounce-circle' : ''}
+                key={index}
+                style={{
+                    position: 'absolute',
+                    left: t.x - radius,
+                    top: t.y - radius,
+                    width: radius * 2,
+                    height: radius * 2,
+                    pointerEvents: 'none',
+                    visibility: !touchId && 'hidden',
+                    display:  winnerId && winnerId !== touchId && 'none',
+                }}
+            >
+                <img
+                    src={jiggly}
+                    alt=""
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        transform: `rotate(${t.angle}deg)`,
+                    }}
+                />
+            </div>
+
         )
       })}
       <div className="overlay-text" style={{top: `calc(${window.visualViewport?.offsetTop || 0}px + 12px)`}}>
