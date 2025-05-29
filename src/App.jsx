@@ -74,7 +74,6 @@ const App = () => {
 
 
   const handleTouchStart = (e) => {
-      console.log(e, window.innerHeight, window.innerWidth)
       for (let t of e.changedTouches) {
           const newTouch = {
               [t.identifier]: {
@@ -100,7 +99,6 @@ const App = () => {
 
   useEffect(() => {
     if (phase === PHASE.WINNER && !winnerId) {
-
         const winnerIdx = Math.floor(Math.random() * touchIds.length)
         const winnerId = touchIds[winnerIdx]
         setWinnerId(winnerId)
@@ -149,7 +147,7 @@ const App = () => {
           />
         )
       })}
-      <div className="overlay-text">
+      <div className="overlay-text" style={{top: `calc(${window.visualViewport?.offsetTop || 0}px + 12px)`}}>
         {!winnerId
           && Object.keys(touches).length === 0
           && 'Touch and hold to choose'}
