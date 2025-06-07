@@ -1,37 +1,42 @@
-import {useRef, useState, useEffect} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import './App.css'
 
 const PHASE = {
-  IDLE: 'idle',
-  CHOOSING: 'choosing',
-  WINNER: 'winner',
+    IDLE: 'idle',
+    CHOOSING: 'choosing',
+    WINNER: 'winner',
 }
 
 const App = () => {
     const colors = [
-      '#e57373',
-      '#ba68c8',
-      '#4dd0e1',
-      '#ffd54f',
-      '#81c784',
+        '#e57373',
+        '#9656c1',
+        '#4dd0e1',
+        '#ffd54f',
+        '#81c784',
+        '#557acf',
+        '#f67c3a',
+        '#f38fc7',
+        '#bac83e',
+        '#d68639',
     ]
 
-  const BOUNCE_DURATION = 4550
-  const RADIUS = 64
-  const BORDER_WIDTH = 10
-  const WIN_RADIUS = 800
+    const BOUNCE_DURATION = 4500
+    const RADIUS = 64
+    const BORDER_WIDTH = 10
+    const WIN_RADIUS = 800
 
-  const touchCount = useRef(0);
-  const [touches, setTouches] = useState({})
-  const [phase, setPhase] = useState(PHASE.IDLE)
-  const [winnerId, setWinnerId] = useState(null)
+    const touchCount = useRef(0);
+    const [touches, setTouches] = useState({})
+    const [phase, setPhase] = useState(PHASE.IDLE)
+    const [winnerId, setWinnerId] = useState(null)
 
-  const currentTouchCount = Object.keys(touches).length;
-  const touchIds = Object.keys(touches)
+    const currentTouchCount = Object.keys(touches).length;
+    const touchIds = Object.keys(touches)
 
     const getXY = (t) => {
-        const { width, height, offsetLeft, offsetTop } = window.visualViewport;
-        const minX = RADIUS  + offsetLeft;
+        const {width, height, offsetLeft, offsetTop} = window.visualViewport;
+        const minX = RADIUS + offsetLeft;
         const maxX = width + offsetLeft - RADIUS - BORDER_WIDTH * 2;
         const minY = RADIUS + offsetTop;
         const maxY = height + offsetTop - RADIUS - BORDER_WIDTH * 2;
@@ -44,18 +49,18 @@ const App = () => {
 
 
     const syncTouches = (e) => {
-    const newTouches = {  }
-    for (let t of e.touches) {
-      newTouches[t.identifier] = {
-        color: colors[touchCount.current % colors.length],
-        ...touches[t.identifier],
-        ...getXY(t)
-      }
+        const newTouches = {}
+        for (let t of e.touches) {
+            newTouches[t.identifier] = {
+                color: colors[touchCount.current % colors.length],
+                ...touches[t.identifier],
+                ...getXY(t)
+            }
+        }
+        setTouches(newTouches)
     }
-    setTouches(newTouches)
-  }
 
-    const isChoosing = currentTouchCount >=2;
+    const isChoosing = currentTouchCount >= 2;
 
     useEffect(() => {
         if (currentTouchCount < 2 && phase !== PHASE.IDLE) {
@@ -78,93 +83,93 @@ const App = () => {
     }, [isChoosing, phase, winnerId]);
 
 
-  const handleTouchStart = (e) => {
-      for (let t of e.changedTouches) {
-          const newTouch = {
-              [t.identifier]: {
-                  ...getXY(t),
-                  color: colors[touchCount.current % colors.length],
-              }
-          }
-          setTouches(prevTouches => ({...prevTouches, ...newTouch}))
-          touchCount.current += 1;
-      }
-  }
-
-  const handleTouchMove = (e) => {
-    if (winnerId){
-      return
-    }
-    syncTouches(e)
-  }
-
-  const handleTouchEnd = (e) => {
-    syncTouches(e)
-  }
-
-  useEffect(() => {
-    if (phase === PHASE.WINNER && !winnerId) {
-        const winnerIdx = Math.floor(Math.random() * touchIds.length)
-        const winnerId = touchIds[winnerIdx]
-        setWinnerId(winnerId)
+    const handleTouchStart = (e) => {
+        for (let t of e.changedTouches) {
+            const newTouch = {
+                [t.identifier]: {
+                    ...getXY(t),
+                    color: colors[touchCount.current % colors.length],
+                }
+            }
+            setTouches(prevTouches => ({...prevTouches, ...newTouch}))
+            touchCount.current += 1;
+        }
     }
 
-  }, [phase, touchIds, winnerId])
+    const handleTouchMove = (e) => {
+        if (winnerId) {
+            return
+        }
+        syncTouches(e)
+    }
 
-  return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        overflow: 'hidden',
-        touchAction: 'none',
-        background: winnerId ? touches[winnerId] : undefined,
-        userSelect: 'none',
-        WebkitUserSelect: 'none',
-        MozUserSelect: 'none',
-        msUserSelect: 'none',
-      }}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      onTouchCancel={handleTouchEnd}
-    >
-      {Array(5).fill(null).map((_, index) => {
+    const handleTouchEnd = (e) => {
+        syncTouches(e)
+    }
 
-          const touchId = touchIds[index];
-          const t = touches[touchId] || { x: 0, y: 0, angle: 0, color: 'inherit'};
-          const radius = winnerId === touchId ? WIN_RADIUS : RADIUS;
+    useEffect(() => {
+        if (phase === PHASE.WINNER && !winnerId) {
+            const winnerIdx = Math.floor(Math.random() * touchIds.length)
+            const winnerId = touchIds[winnerIdx]
+            setWinnerId(winnerId)
+        }
 
-        return (
-          <div
-          className={phase === PHASE.CHOOSING  && 'bounce-circle'}
-            key={index}
+    }, [phase, touchIds, winnerId])
+
+    return (
+        <div
             style={{
-              position: 'absolute',
-              left: t.x - radius,
-              top: t.y - radius,
-              width: radius * 2,
-              height: radius * 2,
-              borderRadius: '50%',
-              background: t.color,
-              border: '10px solid #fff',
-              boxShadow: `0 2px ${BORDER_WIDTH}px rgba(0,0,0,0.2)`,
-              transition: winnerId && 'all 1.5s cubic-bezier(0.4, 0, 0.2, 1)',
-              display:  winnerId && winnerId !== touchId && 'none',
-                visibility: !touchId && 'hidden',
+                position: 'fixed',
+                inset: 0,
+                overflow: 'hidden',
+                touchAction: 'none',
+                background: winnerId ? touches[winnerId] : undefined,
+                userSelect: 'none',
+                WebkitUserSelect: 'none',
+                MozUserSelect: 'none',
+                msUserSelect: 'none',
             }}
-          />
-        )
-      })}
-      <div className="overlay-text" style={{top: `calc(${window.visualViewport?.offsetTop || 0}px + 12px)`}}>
-        {!winnerId
-          && Object.keys(touches).length === 0
-          && 'Touch and hold to choose'}
-          {!winnerId && Object.keys(touches).length === 1
-          && 'Add more fingers...'}
-      </div>
-    </div>
-  )
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            // onTouchCancel={handleTouchEnd}
+        >
+            {Array(navigator.maxTouchPoints).fill(null).map((_, index) => {
+
+                const touchId = touchIds[index];
+                const t = touches[touchId] || {x: 0, y: 0, angle: 0, color: 'inherit'};
+                const radius = winnerId === touchId ? WIN_RADIUS : RADIUS;
+
+                return (
+                    <div
+                        className={phase === PHASE.CHOOSING ? 'bounce-circle': ''}
+                        key={index}
+                        style={{
+                            position: 'absolute',
+                            left: t.x - radius,
+                            top: t.y - radius,
+                            width: radius * 2,
+                            height: radius * 2,
+                            borderRadius: '50%',
+                            background: t.color,
+                            border: '10px solid #fff',
+                            boxShadow: `0 2px ${BORDER_WIDTH}px rgba(0,0,0,0.2)`,
+                            transition: winnerId && 'all 1.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                            display: winnerId && winnerId !== touchId && 'none',
+                            visibility: !touchId && 'hidden',
+                        }}
+                    />
+                )
+            })}
+            <div className="overlay-text" style={{top: `calc(${window.visualViewport?.offsetTop || 0}px + 12px)`}}>
+                {!winnerId
+                    && Object.keys(touches).length === 0
+                    && 'Touch and hold to choose'}
+                {!winnerId && Object.keys(touches).length === 1
+                    && 'Add more fingers...'}
+            </div>
+        </div>
+    )
 }
 
 export default App
