@@ -1,3 +1,9 @@
+:root {
+    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    color: rgba(255, 255, 255, 0.87);
+    background-color: #242424;
+}
+
 @keyframes pulse {
     0% {
         transform: scale(1);
@@ -18,13 +24,18 @@
     position: absolute;
     width: 100%;
     text-align: center;
-    color: #fff;
     font-size: 24px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.wrapper {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    touch-action: none;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    pointer-events: none;
-    font-weight: 600;
-    letter-spacing: 1px;
 }

@@ -128,21 +128,10 @@ const App = () => {
 
     return (
         <div
-            style={{
-                position: 'fixed',
-                inset: 0,
-                overflow: 'hidden',
-                touchAction: 'none',
-                background: winnerId ? touches[winnerId] : undefined,
-                userSelect: 'none',
-                WebkitUserSelect: 'none',
-                MozUserSelect: 'none',
-                msUserSelect: 'none',
-            }}
+            className="wrapper"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            // onTouchCancel={handleTouchEnd}
         >
             {Array(navigator.maxTouchPoints).fill(null).map((_, index) => {
                 const radius = RADIUS;
