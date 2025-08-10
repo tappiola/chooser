@@ -1,8 +1,6 @@
 import './App.css'
 import useTouches, { PHASE } from 'use-touches'
-
-const jiggly =
-  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/39.png'
+import jiggly from './jiggly.png'
 
 const App = () => {
   const BOUNCE_DURATION = 6050
