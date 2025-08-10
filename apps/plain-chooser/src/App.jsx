@@ -1,5 +1,5 @@
 import './App.css'
-import useTouches, { PHASE } from './useTouches.js'
+import useTouches, { PHASE } from 'use-touches'
 
 const App = () => {
   const colors = [
