@@ -1,12 +1,6 @@
-import {useEffect, useRef, useState} from 'react'
-import jiggly from './jiggly.png';
+import jiggly from './jiggly.png'
 import './App2.css'
-
-const PHASE = {
-    IDLE: 'idle',
-    CHOOSING: 'choosing',
-    WINNER: 'winner',
-}
+import useTouchChooser, {PHASE} from './useTouchChooser.js'
 
 const App = () => {
     const colors = [
@@ -26,105 +20,28 @@ const App = () => {
     const RADIUS = 80
     const BORDER_WIDTH = 10
 
-    const touchCount = useRef(0);
-    const [touches, setTouches] = useState({})
-    const [phase, setPhase] = useState(PHASE.IDLE)
-    const [winnerId, setWinnerId] = useState(null)
-
-    const currentTouchCount = Object.keys(touches).length;
-    const touchIds = Object.keys(touches)
-
-    const getXY = (t) => {
-        const {width, height, offsetLeft, offsetTop} = window.visualViewport;
-        const minX = RADIUS + offsetLeft;
-        const maxX = width + offsetLeft - RADIUS - BORDER_WIDTH * 2;
-        const minY = RADIUS + offsetTop;
-        const maxY = height + offsetTop - RADIUS - BORDER_WIDTH * 2;
-
-        const x = Math.max(minX, Math.min(t.clientX, maxX));
-        const y = Math.max(minY, Math.min(t.clientY, maxY));
-
-        const centerX = width / 2 + offsetLeft;
-        const centerY = height / 2 + offsetTop;
-
-        const angleRad = Math.atan2(centerY - y, centerX - x)
-        const angleDeg = angleRad * (180 / Math.PI) + 90;
-
-        return {
-            x,
-            y,
-            angle: angleDeg
-        };
-    };
-
-
-    const syncTouches = (e) => {
-        const newTouches = {}
-        for (let t of e.touches) {
-            newTouches[t.identifier] = {
-                color: colors[touchCount.current % colors.length],
-                ...touches[t.identifier],
-                ...getXY(t)
-            }
-        }
-        setTouches(newTouches)
-    }
-
-    useEffect(() => {
-        if (currentTouchCount < 2 && phase !== PHASE.IDLE) {
-            setPhase(PHASE.IDLE)
-        }
-        if (currentTouchCount >= 2 && !winnerId && phase === PHASE.IDLE) {
-            setPhase(PHASE.CHOOSING)
-        }
-        if (currentTouchCount === 0 && winnerId) {
-            setWinnerId(null)
-        }
-    }, [currentTouchCount, phase, winnerId]);
-
-    const isChoosing = currentTouchCount >= 2;
-
-    useEffect(() => {
-        if (isChoosing && !winnerId && phase !== PHASE.WINNER) {
-            const timeoutId = setTimeout(() => setPhase(PHASE.WINNER), BOUNCE_DURATION)
-
-            return () => clearTimeout(timeoutId)
-        }
-    }, [isChoosing, phase, winnerId]);
-
-
-    const handleTouchStart = (e) => {
-        for (let t of e.changedTouches) {
-            const newTouch = {
-                [t.identifier]: {
-                    ...getXY(t),
-                    color: colors[touchCount.current % colors.length],
-                }
-            }
-            setTouches(prevTouches => ({...prevTouches, ...newTouch}))
-            touchCount.current += 1;
-        }
-    }
-
-    const handleTouchMove = (e) => {
-        if (winnerId) {
-            return
-        }
-        syncTouches(e)
-    }
-
-    const handleTouchEnd = (e) => {
-        syncTouches(e)
-    }
-
-    useEffect(() => {
-        if (phase === PHASE.WINNER && !winnerId) {
-            const winnerIdx = Math.floor(Math.random() * touchIds.length)
-            const winnerId = touchIds[winnerIdx]
-            setWinnerId(winnerId)
-        }
-
-    }, [phase, touchIds, winnerId])
+    const {
+        touches,
+        phase,
+        winnerId,
+        touchIds,
+        handleTouchStart,
+        handleTouchMove,
+        handleTouchEnd,
+    } = useTouchChooser({
+        colors,
+        radius: RADIUS,
+        borderWidth: BORDER_WIDTH,
+        bounceDuration: BOUNCE_DURATION,
+        getExtraData: (_, {x, y}) => {
+            const {width, height, offsetLeft, offsetTop} = window.visualViewport
+            const centerX = width / 2 + offsetLeft
+            const centerY = height / 2 + offsetTop
+            const angleRad = Math.atan2(centerY - y, centerX - x)
+            const angleDeg = angleRad * (180 / Math.PI) + 90
+            return {angle: angleDeg}
+        },
+    })
 
     return (
         <div
@@ -134,9 +51,9 @@ const App = () => {
             onTouchEnd={handleTouchEnd}
         >
             {Array(navigator.maxTouchPoints).fill(null).map((_, index) => {
-                const radius = RADIUS;
-                const touchId = touchIds[index];
-                const t = touches[touchId] || {x: 0, y: 0, angle: 0, color: 'inherit'};
+                const radius = RADIUS
+                const touchId = touchIds[index]
+                const t = touches[touchId] || {x: 0, y: 0, angle: 0, color: 'inherit'}
 
                 return (
                     <div
@@ -169,9 +86,9 @@ const App = () => {
             })}
             <div className="overlay-text" style={{top: `calc(${window.visualViewport?.offsetTop || 0}px + 12px)`}}>
                 {!winnerId
-                    && Object.keys(touches).length === 0
+                    && touchIds.length === 0
                     && 'Touch and hold to choose'}
-                {!winnerId && Object.keys(touches).length === 1
+                {!winnerId && touchIds.length === 1
                     && 'Add more fingers...'}
             </div>
         </div>
@@ -179,3 +96,4 @@ const App = () => {
 }
 
 export default App
+
