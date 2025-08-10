@@ -107,6 +107,24 @@ const useTouches = ({
     syncTouches(touchEvent)
   }
 
+  const getUserMessage = () => {
+    if (navigator.maxTouchPoints === 0) {
+      return 'This device does not support touch input. Try reopening the app on a mobile device.'
+    }
+
+    if (!winnerId) {
+      const touchCount = Object.keys(touches).length
+
+      if (touchCount === 0) {
+        return 'Touch and hold to choose'
+      }
+
+      if (touchCount === 1) {
+        return 'Add more fingers...'
+      }
+    }
+  }
+
   return {
     touches,
     phase,
@@ -115,6 +133,7 @@ const useTouches = ({
     handleTouchStart,
     handleTouchMove,
     handleTouchEnd,
+    getUserMessage,
   }
 }
 

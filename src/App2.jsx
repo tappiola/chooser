@@ -3,22 +3,9 @@ import './App2.css'
 import useTouches, { PHASE } from './useTouches.js'
 
 const App = () => {
-  const colors = [
-    '#e57373',
-    '#9656c1',
-    '#4dd0e1',
-    '#ffd54f',
-    '#81c784',
-    '#557acf',
-    '#f48e58',
-    '#f38fc7',
-    '#bac83e',
-    '#754b2f',
-  ]
-
   const BOUNCE_DURATION = 6050
   const RADIUS = 80
-  const BORDER_WIDTH = 10
+  const BORDER_WIDTH = 0
 
   const {
     touches,
@@ -28,8 +15,8 @@ const App = () => {
     handleTouchStart,
     handleTouchMove,
     handleTouchEnd,
+    getUserMessage,
   } = useTouches({
-    colors,
     radius: RADIUS,
     borderWidth: BORDER_WIDTH,
     bounceDuration: BOUNCE_DURATION,
@@ -96,8 +83,7 @@ const App = () => {
           top: `calc(${window.visualViewport?.offsetTop || 0}px + 12px)`,
         }}
       >
-        {!winnerId && touchIds.length === 0 && 'Touch and hold to choose'}
-        {!winnerId && touchIds.length === 1 && 'Add more fingers...'}
+        {getUserMessage()}
       </div>
     </div>
   )

@@ -28,6 +28,7 @@ const App = () => {
     handleTouchStart,
     handleTouchMove,
     handleTouchEnd,
+    getUserMessage,
   } = useTouches({
     colors,
     radius: RADIUS,
@@ -81,8 +82,7 @@ const App = () => {
           top: `calc(${window.visualViewport?.offsetTop || 0}px + 12px)`,
         }}
       >
-        {!winnerId && touchIds.length === 0 && 'Touch and hold to choose'}
-        {!winnerId && touchIds.length === 1 && 'Add more fingers...'}
+        {getUserMessage()}
       </div>
     </div>
   )
