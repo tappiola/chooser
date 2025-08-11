@@ -1,12 +1,54 @@
-# React + Vite
+# Chooser Monorepo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A collection of touch-based chooser demos built with React and Vite. The repository uses **PNPM** workspaces and **Turborepo** to manage multiple apps and a shared hook.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- [React 19](https://react.dev/) and [Vite](https://vitejs.dev/) for fast development
+- [Turborepo](https://turbo.build/) for orchestrating tasks across packages
+- [PNPM](https://pnpm.io/) workspaces
+- ESLint and Prettier for linting and formatting
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Multi-touch selection handled by a custom `useTouches` hook
+- Two example apps:
+  - **plain-chooser** – colored circles expand to reveal the winner
+  - **pokemon-chooser** – Jigglypuff themed interface
+- Touch positions constrained to the viewport to keep circles on-screen
+
+## Code Structure
+
+```
+apps/
+  plain-chooser/     # basic visual chooser
+  pokemon-chooser/   # Pokémon themed chooser
+packages/
+  use-touches/       # shared React hook
+```
+
+## Development
+
+Install dependencies and start the apps:
+
+```bash
+pnpm install
+pnpm dev
+```
+
+Run a specific package:
+
+```bash
+pnpm --filter plain-chooser dev
+pnpm --filter pokemon-chooser dev
+```
+
+Other useful commands:
+
+```bash
+pnpm lint     # run eslint across packages
+pnpm build    # build all apps
+```
+
+The Turborepo pipeline is configured in `turbo.json` and caches build and lint results for faster workflows.
+
