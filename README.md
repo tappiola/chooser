@@ -16,6 +16,7 @@ A multi-theme chooser app built with React and Vite. The repository uses **PNPM*
   - **plain-chooser** – colored circles expand to reveal the winner
   - **pokemon-chooser** – Jigglypuff themed interface
 - Touch positions constrained to the viewport to keep circles on-screen
+- Both apps are PWAs with service workers for offline use
 
 ## Code Structure
 
