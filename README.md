@@ -1,6 +1,6 @@
 # Chooser Monorepo
 
-A collection of touch-based chooser demos built with React and Vite. The repository uses **PNPM** workspaces and **Turborepo** to manage multiple apps and a shared hook.
+A multi-theme chooser app built with React and Vite. The repository uses **PNPM** workspaces and **Turborepo** to manage multiple apps and a shared hook.
 
 ## Tech Stack
 
@@ -12,7 +12,7 @@ A collection of touch-based chooser demos built with React and Vite. The reposit
 ## Features
 
 - Multi-touch selection handled by a custom `useTouches` hook
-- Two example apps:
+- Two apps:
   - **plain-chooser** – colored circles expand to reveal the winner
   - **pokemon-chooser** – Jigglypuff themed interface
 - Touch positions constrained to the viewport to keep circles on-screen
