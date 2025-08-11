@@ -7,4 +7,8 @@ export default defineConfig({
   server: {
     host: true,
   },
+  test: {
+    environment: 'jsdom',
+    setupFiles: ['@testing-library/jest-dom/vitest'],
+  },
 })

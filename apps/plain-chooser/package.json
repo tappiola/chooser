@@ -16,10 +16,11 @@
     "use-touches": "workspace:*"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.4.1",
-    "vite": "^6.3.5",
+    "@testing-library/jest-dom": "^6.6.4",
     "@testing-library/react": "^16.3.0",
+    "@vitejs/plugin-react": "^4.4.1",
     "jsdom": "^24.0.0",
+    "vite": "^6.3.5",
     "vitest": "^3.2.4"
   }
 }

@@ -53,6 +53,9 @@ const App = () => {
             <div
               className={phase !== PHASE.IDLE ? 'bounce-circle' : ''}
               key={index}
+              data-testid={
+                touchId && (winnerId === touchId ? 'winning-circle' : 'circle')
+              }
               style={{
                 position: 'absolute',
                 left: touchInfo.x - radius,

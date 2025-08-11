@@ -58,6 +58,9 @@ const App = () => {
           return (
             <div
               className={phase === PHASE.CHOOSING ? 'bounce-circle' : ''}
+              data-testid={
+                touchId && (winnerId === touchId ? 'winning-circle' : 'circle')
+              }
               key={index}
               style={{
                 position: 'absolute',
