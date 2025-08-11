@@ -7,7 +7,8 @@
     "dev": "vite --port 4000",
     "build": "vite build",
     "lint": "pnpm exec eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest"
   },
   "dependencies": {
     "react": "^19.1.0",
@@ -16,6 +17,9 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.4.1",
-    "vite": "^6.3.5"
+    "vite": "^6.3.5",
+    "@testing-library/react": "^16.3.0",
+    "jsdom": "^24.0.0",
+    "vitest": "^3.2.4"
   }
 }
