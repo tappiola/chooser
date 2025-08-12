@@ -1,0 +1,13 @@
+{
+  "projects": {
+    "default": "chooser-f44b8"
+  },
+  "targets": {
+      "chooser-f44b8": {
+        "hosting": {
+          "plain-chooser": ["chooser-f44b8"],
+          "pokemon-chooser": ["pokemon-chooser-98ab5"]
+        }
+      }
+    }
+}

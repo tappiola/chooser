@@ -44,12 +44,9 @@ pnpm --filter plain-chooser dev
 pnpm --filter pokemon-chooser dev
 ```
 
-Other useful commands:
+## Deployment
 
-```bash
-pnpm lint     # run eslint across packages
-pnpm build    # build all apps
-```
-
-The Turborepo pipeline is configured in `turbo.json` and caches build and lint results for faster workflows.
+Both versions are deployed to Firebase:
+- Plain chooser - https://chooser.tappiola.co.uk
+- Pokemon chooser - https://pokemon-chooser.co.uk
 
